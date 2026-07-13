@@ -3,399 +3,1366 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Master Plumbing </title>
+<title>Master Plumbing — Devis & Factures</title>
 <style>
-  body{font-family: Arial, Helvetica, sans-serif;margin:0;padding:0;background:#f4f6f8;color:#111;}
-  .app{max-width:980px;margin:24px auto;padding:18px;background:white;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,0.08);}
-  header{
-    display:flex;align-items:center;gap:16px;border-bottom:1px solid #eee;padding-bottom:12px;margin-bottom:14px;
+/* =============================================
+   DESIGN SYSTEM
+   ============================================= */
+:root {
+  --color-bg:         #F0F2F5;
+  --color-surface:    #FFFFFF;
+  --color-border:     #DDE1E7;
+  --color-border-mid: #C5CAD3;
+
+  --color-text-primary:   #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-muted:     #9CA3AF;
+
+  --color-blue:       #1D4ED8;
+  --color-blue-light: #EFF6FF;
+  --color-blue-mid:   #BFDBFE;
+  --color-blue-dark:  #1E40AF;
+
+  --color-green:      #059669;
+  --color-green-bg:   #ECFDF5;
+  --color-red:        #DC2626;
+  --color-red-bg:     #FEF2F2;
+  --color-amber:      #D97706;
+  --color-amber-bg:   #FFFBEB;
+
+  --color-ink:        #0F172A;
+
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-xl:  12px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,.10), 0 4px 10px rgba(0,0,0,.05);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Mono', monospace;
+
+  --transition: 120ms ease;
+}
+
+/* ---- Reset & Base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Layout Shell ---- */
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Top Bar ---- */
+.topbar {
+  background: var(--color-ink);
+  color: #F1F5F9;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 rgba(255,255,255,.06);
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+.topbar-mark {
+  width: 32px; height: 32px;
+  background: var(--color-blue);
+  color: white;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.topbar-brand { font-size: 13px; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
+.topbar-sep { width: 1px; height: 22px; background: rgba(255,255,255,.12); margin: 0 4px; }
+.topbar-module { font-size: 12px; color: #94A3B8; }
+.topbar-spacer { flex: 1; }
+.topbar-meta { font-size: 12px; color: #64748B; }
+
+/* ---- Main Content ---- */
+.main {
+  flex: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  width: 100%;
+}
+
+/* ---- Section Wrapper ---- */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAFBFC;
+}
+.card-header-icon {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.card-header-icon.blue { background: var(--color-blue-light); }
+.card-header-icon.green { background: var(--color-green-bg); }
+.card-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+.card-body { padding: 20px; }
+
+/* ---- Doc Meta Bar ---- */
+.doc-meta {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.doc-meta-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.doc-meta-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.badge-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition);
+}
+.badge-type.devis { background: var(--color-amber-bg); color: var(--color-amber); border: 1px solid #FCD34D; }
+.badge-type.facture { background: var(--color-green-bg); color: var(--color-green); border: 1px solid #6EE7B7; }
+
+/* ---- Form Controls ---- */
+input, select, textarea {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(29,78,216,.12);
+}
+input:hover, select:hover { border-color: var(--color-border-mid); }
+input[type="number"] { font-family: var(--font-mono); }
+
+.field-grid {
+  display: grid;
+  gap: 10px;
+}
+.field-row {
+  display: grid;
+  gap: 10px;
+}
+.field-row-2 { grid-template-columns: 1fr 1fr; }
+.field-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+/* ---- Two-Column Info Grid ---- */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.info-panel {
+  background: #FAFBFC;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.info-panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ---- Data Tables ---- */
+.data-table-wrap { overflow-x: auto; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table thead tr {
+  background: #F8F9FA;
+  border-bottom: 1px solid var(--color-border);
+}
+.data-table th {
+  padding: 9px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  text-align: left;
+  white-space: nowrap;
+}
+.data-table th.right, .data-table td.right { text-align: right; }
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #F1F3F6;
+  vertical-align: middle;
+}
+.data-table tbody tr:hover { background: #FAFBFF; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table td input {
+  border-color: transparent;
+  background: transparent;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+}
+.data-table td input:hover { border-color: var(--color-border); background: white; }
+.data-table td input:focus { border-color: var(--color-blue); background: white; box-shadow: 0 0 0 3px rgba(29,78,216,.12); }
+.data-table .num-col { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-secondary); text-align: center; }
+.data-table .mono { font-family: var(--font-mono); font-size: 12px; }
+
+/* ---- Row Index Badge ---- */
+.row-idx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  background: #F1F3F6;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* ---- Amount Cells ---- */
+.amt-fc {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+}
+.amt-usd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-green);
+  text-align: right;
+}
+.amt-usd-blue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-blue);
+  text-align: right;
+}
+
+/* ---- Remove Button ---- */
+.btn-remove {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.btn-remove:hover { border-color: var(--color-red); color: var(--color-red); background: var(--color-red-bg); }
+
+/* ---- Add Row Button ---- */
+.btn-add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-blue);
+  background: var(--color-blue-light);
+  border: 1px dashed var(--color-blue-mid);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 10px;
+}
+.btn-add-row:hover { background: #DBEAFE; border-style: solid; }
+
+/* ---- Summary Panel ---- */
+.summary-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  width: 380px;
+  margin-left: auto;
+  margin-top: 16px;
+}
+.summary-panel .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #F1F3F6;
+  font-size: 13px;
+}
+.summary-panel .row:last-child { border-bottom: none; }
+.summary-panel .row.total-row {
+  background: var(--color-ink);
+  padding: 14px 16px;
+  border-bottom: none;
+}
+.summary-panel .row.total-row span { color: white; font-size: 15px; font-weight: 700; }
+.summary-panel .row.usd-row {
+  background: var(--color-green-bg);
+  border-top: 1px solid #A7F3D0;
+  padding: 10px 16px;
+}
+.summary-panel .row.usd-row span { color: var(--color-green); font-weight: 700; font-family: var(--font-mono); }
+.summary-panel .row .label { color: var(--color-text-secondary); }
+.summary-panel .row .value { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+.summary-panel .row.subtotal .value.blue { color: var(--color-blue); }
+.summary-panel .row.subtotal .value { color: var(--color-text-primary); }
+.vat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vat-input-row input { width: 70px; padding: 5px 8px; }
+
+/* ---- Action Bar ---- */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  background: #FAFBFC;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  margin-top: 8px;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  letter-spacing: .01em;
+}
+.btn-primary {
+  background: var(--color-ink);
+  color: white;
+  border-color: var(--color-ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.btn-primary:hover { background: #1E293B; border-color: #1E293B; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.btn-secondary {
+  background: white;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary:hover { background: #F8F9FA; border-color: var(--color-border-mid); }
+.btn-danger {
+  background: white;
+  color: var(--color-red);
+  border-color: var(--color-border);
+}
+.btn-danger:hover { background: var(--color-red-bg); border-color: var(--color-red); }
+.btn-ghost-spacer { flex: 1; }
+
+/* ===================================================
+   PRINT / PREVIEW AREA
+   =================================================== */
+.preview-area {
+  display: none;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-top: 24px;
+  padding: 40px 48px;
+  position: relative;
+}
+
+/* ---- Document Header ---- */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-ink);
+}
+.doc-company h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-ink);
+  letter-spacing: -.02em;
+}
+.doc-company p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.doc-title-block { text-align: right; }
+.doc-type-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.doc-type-badge.devis { background: var(--color-amber-bg); color: var(--color-amber); border: 1px solid #FCD34D; }
+.doc-type-badge.facture { background: var(--color-green-bg); color: var(--color-green); border: 1px solid #6EE7B7; }
+.doc-num { font-size: 18px; font-weight: 800; color: var(--color-ink); letter-spacing: -.01em; }
+.doc-date { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+.doc-rate { font-size: 11px; color: var(--color-text-muted); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ---- Client Block ---- */
+.doc-client-block {
+  background: #F8F9FA;
+  border-left: 3px solid var(--color-ink);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 28px;
+}
+.doc-client-block .label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+.doc-client-block .name { font-size: 15px; font-weight: 700; color: var(--color-ink); margin-bottom: 2px; }
+.doc-client-block .detail { font-size: 12px; color: var(--color-text-secondary); }
+
+/* ---- Document Section Titles ---- */
+.doc-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-text-secondary);
+  margin: 24px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+.doc-section-title .counter {
+  width: 18px; height: 18px;
+  background: var(--color-ink);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* ---- Document Tables ---- */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.doc-table thead tr { background: var(--color-ink); }
+.doc-table thead th {
+  padding: 8px 12px;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  text-align: left;
+}
+.doc-table thead th.right { text-align: right; }
+.doc-table tbody tr { border-bottom: 1px solid #F1F3F6; }
+.doc-table tbody tr:nth-child(even) { background: #FAFBFC; }
+.doc-table tbody td { padding: 8px 12px; }
+.doc-table tbody td.right { text-align: right; }
+.doc-table tbody td.mono { font-family: var(--font-mono); }
+.doc-table tbody td.bold { font-weight: 700; }
+.doc-table .sub-total-row td {
+  padding: 8px 12px;
+  font-weight: 600;
+  background: #F8F9FA;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+.doc-table .sub-total-row td:last-child { font-family: var(--font-mono); font-weight: 700; color: var(--color-text-primary); }
+
+/* ---- Document Summary ---- */
+.doc-summary {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-end;
+}
+.doc-summary-inner {
+  width: 300px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.doc-summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid #F1F3F6;
+}
+.doc-summary-row:last-child { border-bottom: none; }
+.doc-summary-row.total {
+  background: var(--color-ink);
+  padding: 12px 14px;
+  border-bottom: none;
+}
+.doc-summary-row.total span { color: white; font-weight: 800; font-size: 14px; font-family: var(--font-mono); }
+.doc-summary-row.fc-equiv {
+  background: #F8F9FA;
+  font-size: 11px;
+}
+.doc-summary-row.fc-equiv span { color: var(--color-text-secondary); font-family: var(--font-mono); }
+.doc-summary-label { color: var(--color-text-secondary); }
+.doc-summary-value { font-family: var(--font-mono); font-weight: 600; }
+.doc-summary-value.green { color: var(--color-green); }
+.doc-summary-value.blue { color: var(--color-blue); }
+
+/* ---- Document Footer ---- */
+.doc-footer {
+  margin-top: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.doc-footer-city { font-size: 12px; color: var(--color-text-secondary); }
+.doc-sig {
+  text-align: center;
+  width: 180px;
+}
+.doc-sig .sig-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+.doc-sig .sig-line {
+  height: 52px;
+  border-bottom: 1px solid var(--color-border-mid);
+  margin-bottom: 4px;
+}
+.doc-sig .sig-name { font-size: 11px; color: var(--color-text-muted); }
+
+.doc-tagline {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  letter-spacing: .04em;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Fx Rate inline  ---- */
+.fx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #F1F5F9;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Divider ---- */
+.divider { height: 1px; background: var(--color-border); margin: 0; }
+
+/* ===================================================
+   PRINT MEDIA
+   =================================================== */
+@media print {
+  .shell { display: block; }
+  .topbar { display: none; }
+  .main { display: none; }
+  .preview-area {
+    display: block !important;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 20mm 18mm;
+    margin: 0;
   }
-  h1{margin:0;font-size:20px;}
-  .flex{display:flex;gap:10px;flex-wrap:wrap;}
-  label{font-size:13px;color:#444;}
-  input,select,textarea{padding:8px;border:1px solid #ddd;border-radius:4px;}
-  table{width:100%;border-collapse:collapse;margin-top:10px;}
-  th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px;}
-  th{background:#fafafa;}
-  .row-actions{display:flex;gap:8px;}
-  .btn{padding:8px 12px;border-radius:6px;border:0;cursor:pointer;}
-  .btn-primary{background:#0b74ff;color:white;transition:background 0.1s;}
-  .btn-primary:hover{background:#0a68e0;}
-  .btn-ghost{background:#f0f0f0;transition:background 0.1s;}
-  .btn-ghost:hover{background:#e0e0e0;}
-  .print-area{margin-top:18px;padding:16px;border:1px dashed #e2e2e2;border-radius:6px;background:white;}
-  
-  .section-title { margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; font-size: 16px; color: #333; }
-  .labor-box { background: #f0f7ff; padding: 15px; border-radius: 6px; border: 1px solid #d0e4ff; margin-top: 20px; }
-  
-  @media print{
-    .app{visibility:hidden;}
-    .print-area{
-      visibility:visible;
-      position:absolute;
-      left:0;
-      top:0;
-      width:98%; 
-      box-sizing: border-box; 
-      margin:0;
-      padding:20px;
-      border:none;
-      box-shadow:none;
-      background:white;
-    }
-    .print-area button { display: none !important; }
-    body { margin: 0; padding: 0; background: white; }
-  }
+  .preview-actions { display: none !important; }
+  body { background: white; }
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 768px) {
+  .main { padding: 16px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .summary-panel { width: 100%; }
+  .doc-header { flex-direction: column; gap: 16px; }
+  .doc-title-block { text-align: left; }
+  .preview-area { padding: 20px 16px; }
+  .field-row-2, .field-row-3 { grid-template-columns: 1fr; }
+  .doc-meta { gap: 10px; }
+}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="app">
-  <header>
-    <div style="width:64px;height:64px;background:#111;color:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:bold;">
-      MP
+<div class="shell">
+
+  <!-- ═══════════════════════════════════════════
+       TOP BAR
+  ═══════════════════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-mark">MP</div>
+      <span class="topbar-brand">Master Plumbing</span>
     </div>
-    <div>
-      <h1>Master Plumbing (Devis & Factures)</h1>
-      <div style="color:#666;font-size:13px">Application professionnelle de gestion.</div>
-    </div>
+    <div class="topbar-sep"></div>
+    <span class="topbar-module">Devis &amp; Factures</span>
+    <div class="topbar-spacer"></div>
+    <span class="topbar-meta" id="topbar_date"></span>
   </header>
 
-  <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
-    <label for="type">Type :</label>
-    <select id="type">
-      <option value="devis">Devis</option>
-      <option value="facture">Facture</option>
-    </select>
-    <label>Date :</label>
-    <input id="date" type="date">
-    <label>Numéro :</label>
-    <input id="number" placeholder="Ex: 2025-001">
-    <label>Taux (1$ = ? FC) :</label>
-    <input id="fx_rate" type="number" value="2800" style="width:100px;">
-  </div>
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════ -->
+  <main class="main">
 
-  <section style="display:flex;gap:18px;flex-wrap:wrap;">
-    <div style="flex:1;min-width:260px;">
-      <h3 class="section-title">👤 Infos Client</h3>
-      <div style="display:grid;gap:8px;">
-        <input id="client_name" placeholder="Nom du client">
-        <input id="client_tel" placeholder="Téléphone">
-        <input id="client_addr" placeholder="Adresse">
+    <!-- ── 1. Document Meta ── -->
+    <div class="doc-meta">
+      <div class="doc-meta-field">
+        <label>Type</label>
+        <span id="type_badge" class="badge-type devis" onclick="toggleType()" title="Cliquer pour basculer">DEVIS</span>
+        <input type="hidden" id="type" value="devis">
+      </div>
+      <div class="doc-meta-field">
+        <label>Numéro</label>
+        <input id="number" placeholder="Ex: 2025-001" style="width:120px;">
+      </div>
+      <div class="doc-meta-field">
+        <label>Date</label>
+        <input id="date" type="date" style="width:150px;">
+      </div>
+      <div class="doc-meta-field">
+        <label>Taux de change</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:12px;color:var(--color-text-secondary);">1$ =</span>
+          <input id="fx_rate" type="number" value="2800" style="width:90px;">
+          <span style="font-size:12px;color:var(--color-text-secondary);">FC</span>
+        </div>
       </div>
     </div>
-    <div style="flex:1;min-width:260px;">
-      <h3 class="section-title">🏠 Infos Entreprise</h3>
-      <div style="display:grid;gap:8px;">
-        <input id="mt_name" value="Master Plumbing" placeholder="Nom de l'entreprise">
-        <input id="mt_owner" value="Enoch" placeholder="Gérant">
-        <input id="mt_tel" value="+243 999 313 797" placeholder="Téléphone">
-        <input id="mt_addr" value="Ville, République Dém. du Congo" placeholder="Adresse">
+
+    <!-- ── 2. Parties ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon blue">👥</div>
+        <span class="card-header-title">Informations</span>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <!-- Client -->
+          <div class="info-panel">
+            <div class="info-panel-title">Client / Destinataire</div>
+            <div class="field-grid">
+              <div class="field-group">
+                <span class="field-label">Nom complet</span>
+                <input id="client_name" placeholder="Nom du client">
+              </div>
+              <div class="field-row field-row-2">
+                <div class="field-group">
+                  <span class="field-label">Téléphone</span>
+                  <input id="client_tel" placeholder="+243 …">
+                </div>
+                <div class="field-group">
+                  <span class="field-label">Adresse</span>
+                  <input id="client_addr" placeholder="Quartier, Ville">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Entreprise -->
+          <div class="info-panel">
+            <div class="info-panel-title">Entreprise / Émetteur</div>
+            <div class="field-grid">
+              <div class="field-group">
+                <span class="field-label">Raison sociale</span>
+                <input id="mt_name" value="Master Plumbing">
+              </div>
+              <div class="field-row field-row-2">
+                <div class="field-group">
+                  <span class="field-label">Gérant</span>
+                  <input id="mt_owner" value="Enoch">
+                </div>
+                <div class="field-group">
+                  <span class="field-label">Téléphone</span>
+                  <input id="mt_tel" value="+243 999 313 797">
+                </div>
+              </div>
+              <div class="field-group">
+                <span class="field-label">Adresse</span>
+                <input id="mt_addr" value="Ville, République Dém. du Congo">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- SECTION MATÉRIELS -->
-  <h3 class="section-title">📦 Liste des Matériels</h3>
-  <div style="overflow:auto;">
-    <table id="items">
-      <thead>
-        <tr>
-          <th style="width:5%;">#</th>
-          <th>Désignation Matériel</th>
-          <th style="width:10%;">Quantité</th>
-          <th style="width:15%;">Prix Unitaire (FC)</th>
-          <th style="width:15%;">Montant (FC)</th>
-          <th style="width:12%;">Montant ($)</th>
-          <th style="width:5%;"></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div style="margin-top:8px;">
-    <button class="btn btn-ghost" id="addRow">+ Ajouter matériel</button>
-  </div>
-
-  <!-- SECTION MAIN D'OEUVRE SIMPLIFIÉE -->
-  <div class="labor-box">
-    <h3 class="section-title" style="margin-top:0; color: #0056b3;">🛠️ Section Main-d'œuvre</h3>
-    <div style="overflow:auto;">
-      <table id="labor_items">
-        <thead>
-          <tr>
-            <th style="width:5%; background:#e6f1ff;">#</th>
-            <th style="background:#e6f1ff;">Description des Travaux</th>
-            <th style="width:25%; background:#e6f1ff; text-align:right;">Montant Fixe ($)</th>
-            <th style="width:5%; background:#e6f1ff;"></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div style="margin-top:8px;">
-      <button class="btn btn-primary" id="addLaborRow" style="background:#0056b3;">+ Ajouter main-d'œuvre</button>
-    </div>
-  </div>
-
-  <!-- RECAPITULATIF FINANCIER -->
-  <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:20px;align-items:center;">
-    <div style="width:380px; background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px;">
-      <div style="display:flex;justify-content:space-between; margin-bottom: 5px;"><div>Matériels (FC)</div><div id="subtotal">0</div></div>
-      <div style="display:flex;justify-content:space-between; color: #0056b3; margin-bottom: 5px;"><div>Main-d'œuvre (FC)</div><div id="labor_total">0</div></div>
-      <div style="display:flex;justify-content:space-between; align-items:center; margin-bottom: 8px;">
-        <div>TVA (%)</div>
-        <div><input id="vat" type="number" value="16" style="width:70px;padding:4px;"></div>
+    <!-- ── 3. Matériels ── -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon blue">📦</div>
+        <span class="card-header-title">Matériels &amp; Fournitures</span>
       </div>
-      <div style="display:flex;justify-content:space-between;font-weight:bold;margin-top:10px;border-top:2px solid #333;padding-top:8px;font-size:1.2em;">
-        <div>TOTAL GÉNÉRAL (FC)</div>
-        <div id="total">0</div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="items">
+          <thead>
+            <tr>
+              <th style="width:40px;text-align:center;">#</th>
+              <th>Désignation</th>
+              <th style="width:90px;" class="right">Quantité</th>
+              <th style="width:150px;" class="right">Prix Unit. (FC)</th>
+              <th style="width:140px;" class="right">Total (FC)</th>
+              <th style="width:110px;" class="right">Total ($)</th>
+              <th style="width:40px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
-      <div style="display:flex;justify-content:space-between;font-weight:bold;color: #28a745; font-size: 1.1em; margin-top: 5px;">
-        <div>TOTAL GÉNÉRAL ($)</div>
-        <div id="total_usd">0</div>
+      <div style="padding:0 16px 16px;">
+        <button class="btn-add-row" id="addRow">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Ajouter un matériel
+        </button>
       </div>
     </div>
-  </div>
 
-  <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap; border-top: 1px solid #eee; padding-top: 20px;">
-    <button class="btn btn-primary" id="generate" style="background: #111; padding: 12px 24px;">Générer l'aperçu Final</button>
-    <button class="btn btn-ghost" id="downloadJSON">Sauvegarder Projet</button>
-    <button class="btn btn-ghost" id="resetAll" style="color: #d93025;">Tout Effacer</button>
-  </div>
+    <!-- ── 4. Main d'œuvre ── -->
+    <div class="card">
+      <div class="card-header" style="background:var(--color-blue-light);border-bottom-color:var(--color-blue-mid);">
+        <div class="card-header-icon" style="background:var(--color-blue-mid);">🛠️</div>
+        <span class="card-header-title" style="color:var(--color-blue-dark);">Main-d'œuvre &amp; Services</span>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="labor_items">
+          <thead>
+            <tr style="background:var(--color-blue-dark);">
+              <th style="width:40px;text-align:center;">#</th>
+              <th>Description des Travaux</th>
+              <th style="width:160px;" class="right">Montant Fixe ($)</th>
+              <th style="width:40px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <button class="btn-add-row" id="addLaborRow" style="color:var(--color-blue-dark);background:#DBEAFE;border-color:var(--color-blue-mid);">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Ajouter une main-d'œuvre
+        </button>
+      </div>
+    </div>
 
-  <div class="print-area" id="preview" style="display:none;margin-top:25px;"></div>
+    <!-- ── 5. Summary + Actions ── -->
+    <div class="summary-panel">
+      <div class="row subtotal">
+        <span class="label">Sous-total Matériels</span>
+        <span class="value" id="subtotal">0 FC</span>
+      </div>
+      <div class="row subtotal">
+        <span class="label">Sous-total Main-d'œuvre</span>
+        <span class="value blue" id="labor_total">0 FC</span>
+      </div>
+      <div class="row">
+        <span class="label">TVA</span>
+        <div class="vat-input-row">
+          <input id="vat" type="number" value="16">
+          <span style="font-size:12px;color:var(--color-text-secondary);">%</span>
+          <span class="value" id="vat_amount" style="margin-left:6px;">0 FC</span>
+        </div>
+      </div>
+      <div class="row total-row">
+        <span>TOTAL GÉNÉRAL</span>
+        <span id="total">0 FC</span>
+      </div>
+      <div class="row usd-row">
+        <span style="font-size:12px;color:var(--color-green);font-weight:600;">Équivalent USD</span>
+        <span id="total_usd">0.00 $</span>
+      </div>
+    </div>
 
-  <footer>Master Plumbing - Logiciel de gestion interne</footer>
+    <!-- Action Bar -->
+    <div class="card" style="margin-top:16px;">
+      <div class="action-bar">
+        <button class="btn btn-primary" id="generate">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L13 7M13 7L7 13M13 7H1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Générer l'aperçu
+        </button>
+        <button class="btn btn-secondary" id="downloadJSON">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sauvegarder
+        </button>
+        <button class="btn btn-secondary" id="loadJSON">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 13V5M4 8l3-3 3 3M2 3H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Charger
+        </button>
+        <input type="file" id="fileInput" accept=".json" style="display:none;">
+        <div class="btn-ghost-spacer"></div>
+        <button class="btn btn-danger" id="resetAll">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Tout effacer
+        </button>
+      </div>
+    </div>
+
+    <!-- ── 6. Preview ── -->
+    <div class="preview-area" id="preview"></div>
+
+  </main>
 </div>
 
 <script>
-function fmt(n){ return Number(n||0).toLocaleString('fr-FR', {minimumFractionDigits: 0, maximumFractionDigits: 0}); }
-function fmtUSD(n){ return Number(n||0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-
-function updateTotals(){
-  const fxRate = parseFloat(document.getElementById('fx_rate').value || 1);
-  
-  // Matériels
-  let subtotalMaterialsFC = 0;
-  document.querySelectorAll('#items tbody tr').forEach(r=>{
-    const qty = parseFloat(r.querySelector('.qty').value||0);
-    const price = parseFloat(r.querySelector('.price').value||0);
-    const amt = qty * price;
-    r.querySelector('.amt').textContent = fmt(amt);
-    r.querySelector('.amt_usd').textContent = fmtUSD(amt / fxRate);
-    subtotalMaterialsFC += amt;
-  });
-
-  // Main d'oeuvre (Saisie directe en $)
-  let subtotalLaborUSD = 0;
-  document.querySelectorAll('#labor_items tbody tr').forEach(r=>{
-    const priceUSD = parseFloat(r.querySelector('.price_usd').value||0);
-    subtotalLaborUSD += priceUSD;
-  });
-
-  const subtotalLaborFC = subtotalLaborUSD * fxRate;
-
-  document.getElementById('subtotal').textContent = fmt(subtotalMaterialsFC) + " FC";
-  document.getElementById('labor_total').textContent = fmt(subtotalLaborFC) + " FC";
-  
-  const combinedFC = subtotalMaterialsFC + subtotalLaborFC;
-  const vatPct = parseFloat(document.getElementById('vat').value||0);
-  const totalFC = combinedFC + (combinedFC * vatPct/100);
-  
-  document.getElementById('total').textContent = fmt(totalFC) + " FC";
-  document.getElementById('total_usd').textContent = fmtUSD(totalFC / fxRate) + " $";
+// ══════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════
+function fmt(n) {
+  return Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function fmtUSD(n) {
+  return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function addMaterialRow(desc='', qty=1, price=0){
-  const tbody = document.querySelector(`#items tbody`);
-  const idx = tbody.children.length + 1;
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${idx}</td>
-    <td><input class="desc" style="width:98%" value="${desc}"></td>
-    <td><input class="qty" type="number" min="0" value="${qty}" style="width:90%"></td>
-    <td><input class="price" type="number" min="0" value="${price}" style="width:90%"></td>
-    <td class="amt" style="text-align:right;">0</td>
-    <td class="amt_usd" style="text-align:right; color: #28a745; font-weight:bold;">0</td>
-    <td class="row-actions"><button class="btn btn-ghost btn-sm remove">✖</button></td>`;
+// Top-bar date
+(function() {
+  const d = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('topbar_date').textContent = d.toLocaleDateString('fr-FR', opts);
+})();
+
+// ══════════════════════════════════════════════════
+//  TYPE TOGGLE
+// ══════════════════════════════════════════════════
+function toggleType() {
+  const inp = document.getElementById('type');
+  const badge = document.getElementById('type_badge');
+  if (inp.value === 'devis') {
+    inp.value = 'facture';
+    badge.textContent = 'FACTURE';
+    badge.className = 'badge-type facture';
+  } else {
+    inp.value = 'devis';
+    badge.textContent = 'DEVIS';
+    badge.className = 'badge-type devis';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  TOTALS
+// ══════════════════════════════════════════════════
+function updateTotals() {
+  const fxRate = parseFloat(document.getElementById('fx_rate').value || 1);
+
+  let matFC = 0;
+  document.querySelectorAll('#items tbody tr').forEach(r => {
+    const qty   = parseFloat(r.querySelector('.qty').value   || 0);
+    const price = parseFloat(r.querySelector('.price').value || 0);
+    const amt   = qty * price;
+    r.querySelector('.amt').textContent     = fmt(amt) + ' FC';
+    r.querySelector('.amt_usd').textContent = fmtUSD(amt / fxRate) + ' $';
+    matFC += amt;
+  });
+
+  let laborUSD = 0;
+  document.querySelectorAll('#labor_items tbody tr').forEach(r => {
+    laborUSD += parseFloat(r.querySelector('.price_usd').value || 0);
+  });
+  const laborFC = laborUSD * fxRate;
+
+  const combined = matFC + laborFC;
+  const vatPct   = parseFloat(document.getElementById('vat').value || 0);
+  const vatAmt   = combined * vatPct / 100;
+  const total    = combined + vatAmt;
+
+  document.getElementById('subtotal').textContent   = fmt(matFC)   + ' FC';
+  document.getElementById('labor_total').textContent = fmt(laborFC) + ' FC';
+  document.getElementById('vat_amount').textContent  = fmt(vatAmt)  + ' FC';
+  document.getElementById('total').textContent       = fmt(total)   + ' FC';
+  document.getElementById('total_usd').textContent   = fmtUSD(total / fxRate) + ' $';
+}
+
+// ══════════════════════════════════════════════════
+//  ADD ROWS
+// ══════════════════════════════════════════════════
+function addMaterialRow(desc = '', qty = 1, price = 0) {
+  const tbody = document.querySelector('#items tbody');
+  const idx   = tbody.children.length + 1;
+  const tr    = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="num-col"><span class="row-idx">${idx}</span></td>
+    <td><input class="desc" value="${escHtml(desc)}" placeholder="Désignation du matériel"></td>
+    <td class="right"><input class="qty" type="number" min="0" value="${qty}" style="width:70px;text-align:right;"></td>
+    <td class="right"><input class="price" type="number" min="0" value="${price}" style="width:110px;text-align:right;"></td>
+    <td class="amt-fc right amt">0 FC</td>
+    <td class="amt-usd amt_usd right">0.00 $</td>
+    <td style="text-align:center;"><button class="btn-remove remove" title="Supprimer">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button></td>`;
   tbody.appendChild(tr);
-  tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', updateTotals));
-  tr.querySelector('.remove').addEventListener('click', ()=>{ tr.remove(); refreshIndexes('items'); updateTotals(); });
+  tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateTotals));
+  tr.querySelector('.remove').addEventListener('click', () => {
+    tr.remove();
+    refreshIndexes('items');
+    updateTotals();
+  });
   updateTotals();
 }
 
-function addLaborRow(desc='', priceUSD=0){
-  const tbody = document.querySelector(`#labor_items tbody`);
-  const idx = tbody.children.length + 1;
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${idx}</td>
-    <td><input class="desc" style="width:98%" value="${desc}"></td>
-    <td><input class="price_usd" type="number" min="0" value="${priceUSD}" style="width:90%; text-align:right; font-weight:bold; color:#0056b3;"></td>
-    <td class="row-actions"><button class="btn btn-ghost btn-sm remove">✖</button></td>`;
+function addLaborRow(desc = '', priceUSD = 0) {
+  const tbody = document.querySelector('#labor_items tbody');
+  const idx   = tbody.children.length + 1;
+  const tr    = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="num-col"><span class="row-idx">${idx}</span></td>
+    <td><input class="desc" value="${escHtml(desc)}" placeholder="Description des travaux"></td>
+    <td class="right"><input class="price_usd" type="number" min="0" value="${priceUSD}" style="width:110px;text-align:right;color:var(--color-blue-dark);font-family:var(--font-mono);font-weight:600;"></td>
+    <td style="text-align:center;"><button class="btn-remove remove" title="Supprimer">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button></td>`;
   tbody.appendChild(tr);
-  tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', updateTotals));
-  tr.querySelector('.remove').addEventListener('click', ()=>{ tr.remove(); refreshIndexes('labor_items'); updateTotals(); });
+  tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateTotals));
+  tr.querySelector('.remove').addEventListener('click', () => {
+    tr.remove();
+    refreshIndexes('labor_items');
+    updateTotals();
+  });
   updateTotals();
 }
 
-function refreshIndexes(tableId){
-  document.querySelectorAll(`#${tableId} tbody tr`).forEach((tr,i)=>{
-    tr.querySelector('td:first-child').textContent = i+1;
+function refreshIndexes(tableId) {
+  document.querySelectorAll(`#${tableId} tbody tr`).forEach((tr, i) => {
+    const badge = tr.querySelector('.row-idx');
+    if (badge) badge.textContent = i + 1;
   });
 }
 
-document.getElementById('addRow').addEventListener('click', ()=>addMaterialRow('', 1, 0));
-document.getElementById('addLaborRow').addEventListener('click', ()=>addLaborRow('Main-d\'œuvre spécialisée', 0));
-document.getElementById('vat').addEventListener('input', updateTotals);
-document.getElementById('fx_rate').addEventListener('input', updateTotals);
+// ══════════════════════════════════════════════════
+//  EVENT LISTENERS
+// ══════════════════════════════════════════════════
+document.getElementById('addRow').addEventListener('click',      () => addMaterialRow());
+document.getElementById('addLaborRow').addEventListener('click', () => addLaborRow("Main-d'œuvre spécialisée", 0));
+document.getElementById('vat').addEventListener('input',         updateTotals);
+document.getElementById('fx_rate').addEventListener('input',     updateTotals);
 
-document.getElementById('generate').addEventListener('click', ()=>{
+// ══════════════════════════════════════════════════
+//  GENERATE PREVIEW
+// ══════════════════════════════════════════════════
+document.getElementById('generate').addEventListener('click', () => {
   const fxRate = parseFloat(document.getElementById('fx_rate').value || 1);
-  const type_label = document.getElementById('type').value.toUpperCase();
-  const date = document.getElementById('date').value;
-  const number = document.getElementById('number').value || ('MT-'+Date.now());
-  const client = {name:document.getElementById('client_name').value, tel:document.getElementById('client_tel').value, addr:document.getElementById('client_addr').value};
-  const vat = parseFloat(document.getElementById('vat').value||0);
+  const typeVal = document.getElementById('type').value;
+  const typeLabel = typeVal.toUpperCase();
+  const date   = document.getElementById('date').value;
+  const number = document.getElementById('number').value || ('MP-' + Date.now());
+  const vat    = parseFloat(document.getElementById('vat').value || 0);
 
-  // Collecte Matériels
-  let mat_html = ''; let matTotalFC = 0;
-  document.querySelectorAll('#items tbody tr').forEach((r,i)=>{
-    const d = r.querySelector('.desc').value; 
-    const q = parseFloat(r.querySelector('.qty').value||0); 
-    const p = parseFloat(r.querySelector('.price').value||0);
-    const amt = q*p; matTotalFC += amt;
-    mat_html += `<tr>
-      <td style="padding:6px;border-bottom:1px solid #eee;">${i+1}</td>
-      <td style="padding:6px;border-bottom:1px solid #eee;">${d}</td>
-      <td style="text-align:right;padding:6px;border-bottom:1px solid #eee;">${q}</td>
-      <td style="text-align:right;padding:6px;border-bottom:1px solid #eee;">${fmt(p)}</td>
-      <td style="text-align:right;padding:6px;border-bottom:1px solid #eee;font-weight:bold;">${fmt(amt)}</td>
-      <td style="text-align:right;padding:6px;border-bottom:1px solid #eee;color:#28a745;font-weight:bold;">${fmtUSD(amt/fxRate)}</td>
+  const client = {
+    name: document.getElementById('client_name').value || '—',
+    tel:  document.getElementById('client_tel').value,
+    addr: document.getElementById('client_addr').value,
+  };
+
+  // Materials
+  let matHtml = ''; let matFC = 0;
+  document.querySelectorAll('#items tbody tr').forEach((r, i) => {
+    const d   = escHtml(r.querySelector('.desc').value);
+    const qty = parseFloat(r.querySelector('.qty').value   || 0);
+    const p   = parseFloat(r.querySelector('.price').value || 0);
+    const amt = qty * p; matFC += amt;
+    matHtml += `<tr>
+      <td>${i + 1}</td>
+      <td>${d}</td>
+      <td class="right mono">${qty}</td>
+      <td class="right mono">${fmt(p)}</td>
+      <td class="right mono bold">${fmt(amt)}</td>
+      <td class="right mono bold" style="color:var(--color-green);">${fmtUSD(amt / fxRate)}</td>
     </tr>`;
   });
 
-  // Collecte Main d'oeuvre
-  let labor_html = ''; let laborTotalUSD = 0;
-  document.querySelectorAll('#labor_items tbody tr').forEach((r,i)=>{
-    const d = r.querySelector('.desc').value; 
-    const pUSD = parseFloat(r.querySelector('.price_usd').value||0);
-    laborTotalUSD += pUSD;
-    labor_html += `<tr>
-      <td style="padding:6px;border-bottom:1px solid #eee;">${i+1}</td>
-      <td style="padding:6px;border-bottom:1px solid #eee;">${d}</td>
-      <td style="text-align:right;padding:6px;border-bottom:1px solid #eee;font-weight:bold;color:#0056b3;" colspan="4">${fmtUSD(pUSD)} $</td>
+  // Labor
+  let laborHtml = ''; let laborUSD = 0;
+  document.querySelectorAll('#labor_items tbody tr').forEach((r, i) => {
+    const d    = escHtml(r.querySelector('.desc').value);
+    const pUSD = parseFloat(r.querySelector('.price_usd').value || 0);
+    laborUSD += pUSD;
+    laborHtml += `<tr>
+      <td>${i + 1}</td>
+      <td>${d}</td>
+      <td class="right mono bold" style="color:var(--color-blue);" colspan="4">${fmtUSD(pUSD)} $</td>
     </tr>`;
   });
 
-  const matTotalUSD = matTotalFC / fxRate;
-  const combinedUSD = matTotalUSD + laborTotalUSD;
-  const vatValUSD = combinedUSD * vat/100;
-  const totalUSD = combinedUSD + vatValUSD;
-  const totalFC = totalUSD * fxRate;
+  const matUSD    = matFC / fxRate;
+  const combined  = matUSD + laborUSD;
+  const vatAmt    = combined * vat / 100;
+  const totalUSD  = combined + vatAmt;
+  const totalFC   = totalUSD * fxRate;
+
+  const companyName  = escHtml(document.getElementById('mt_name').value);
+  const companyOwner = escHtml(document.getElementById('mt_owner').value);
+  const companyTel   = escHtml(document.getElementById('mt_tel').value);
+  const companyAddr  = escHtml(document.getElementById('mt_addr').value);
 
   const preview = document.getElementById('preview');
-  preview.style.display='block';
+  preview.style.display = 'block';
   preview.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
-      <div>
-        <h2 style="margin:0; color:#111;">${document.getElementById('mt_name').value}</h2>
-        <div style="font-size:14px;">Gérant: ${document.getElementById('mt_owner').value}</div>
-        <div style="font-size:14px;">${document.getElementById('mt_addr').value}</div>
-        <div style="font-size:14px;">Tél: ${document.getElementById('mt_tel').value}</div>
+    <!-- ── Document Header ── -->
+    <div class="doc-header">
+      <div class="doc-company">
+        <h2>${companyName}</h2>
+        <p>Gérant : ${companyOwner}</p>
+        <p>${companyAddr}</p>
+        <p>Tél : ${companyTel}</p>
       </div>
-      <div style="text-align:right;">
-        <div style="font-size:24px;font-weight:bold;color:#0b74ff;">${type_label}</div>
-        <div style="font-size:14px;">№: <strong>${number}</strong></div>
-        <div style="font-size:14px;">Date: ${date}</div>
-        <div style="font-size:11px;color:#666;margin-top:4px;">Taux: 1$ = ${fmt(fxRate)} FC</div>
+      <div class="doc-title-block">
+        <div class="doc-type-badge ${typeVal}">${typeLabel}</div>
+        <div class="doc-num">№ ${escHtml(number)}</div>
+        <div class="doc-date">Date : ${date}</div>
+        <div class="doc-rate">1 $ = ${fmt(fxRate)} FC</div>
       </div>
     </div>
 
-    <div style="padding:10px; border: 1px solid #eee; background:#fafafa; margin-bottom:20px; border-radius:4px;">
-      <strong>DESTINATAIRE :</strong> ${client.name} | ${client.tel} | ${client.addr}
+    <!-- ── Client ── -->
+    <div class="doc-client-block">
+      <div class="label">Destinataire</div>
+      <div class="name">${escHtml(client.name)}</div>
+      ${client.tel || client.addr ? `<div class="detail">${[client.tel, client.addr].filter(Boolean).map(escHtml).join(' &nbsp;·&nbsp; ')}</div>` : ''}
     </div>
 
-    <h4 style="margin: 15px 0 5px 0; border-bottom: 2px solid #eee; padding-bottom: 5px;">1. MATÉRIELS ET FOURNITURES</h4>
-    <table style="width:100%; border-collapse:collapse; font-size:12px;">
-      <thead><tr style="background:#f4f4f4;">
-        <th style="padding:6px;text-align:left;">#</th>
-        <th style="padding:6px;text-align:left;">Désignation</th>
-        <th style="padding:6px;text-align:right;">Qté</th>
-        <th style="padding:6px;text-align:right;">P.U (FC)</th>
-        <th style="padding:6px;text-align:right;">Total (FC)</th>
-        <th style="padding:6px;text-align:right;">Total ($)</th>
-      </tr></thead>
-      <tbody>${mat_html || '<tr><td colspan="6" style="text-align:center;padding:10px;">Aucun matériel</td></tr>'}</tbody>
+    <!-- ── Materials Table ── -->
+    <div class="doc-section-title">
+      <span class="counter">1</span>
+      Matériels et Fournitures
+    </div>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th style="width:32px;">#</th>
+          <th>Désignation</th>
+          <th class="right" style="width:60px;">Qté</th>
+          <th class="right" style="width:120px;">P.U. (FC)</th>
+          <th class="right" style="width:130px;">Total (FC)</th>
+          <th class="right" style="width:110px;">Total ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${matHtml || '<tr><td colspan="6" style="text-align:center;padding:14px;color:var(--color-text-muted);font-style:italic;">Aucun matériel renseigné</td></tr>'}
+      </tbody>
+      ${matHtml ? `<tr class="sub-total-row"><td colspan="4" style="text-align:right;">Sous-total matériels</td><td class="right mono bold">${fmt(matFC)} FC</td><td class="right mono bold" style="color:var(--color-green);">${fmtUSD(matUSD)} $</td></tr>` : ''}
     </table>
 
-    <h4 style="margin: 25px 0 5px 0; border-bottom: 2px solid #0056b3; color: #0056b3; padding-bottom: 5px;">2. MAIN-D'ŒUVRE (MONTANTS FIXES $)</h4>
-    <table style="width:100%; border-collapse:collapse; font-size:12px;">
-      <thead><tr style="background:#e6f1ff;">
-        <th style="padding:6px;text-align:left;width:5%;">#</th>
-        <th style="padding:6px;text-align:left;">Description</th>
-        <th style="padding:6px;text-align:right;">Montant ($)</th>
-      </tr></thead>
-      <tbody>${labor_html || '<tr><td colspan="3" style="text-align:center;padding:10px;">Aucun service</td></tr>'}</tbody>
+    <!-- ── Labor Table ── -->
+    <div class="doc-section-title" style="color:var(--color-blue-dark);">
+      <span class="counter" style="background:var(--color-blue);">2</span>
+      Main-d'œuvre — Montants forfaitaires ($)
+    </div>
+    <table class="doc-table">
+      <thead>
+        <tr style="background:var(--color-blue-dark);">
+          <th style="width:32px;">#</th>
+          <th>Description des Travaux</th>
+          <th class="right" style="width:160px;">Montant ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${laborHtml || '<tr><td colspan="3" style="text-align:center;padding:14px;color:var(--color-text-muted);font-style:italic;">Aucun service renseigné</td></tr>'}
+      </tbody>
+      ${laborHtml ? `<tr class="sub-total-row"><td colspan="2" style="text-align:right;">Sous-total main-d'œuvre</td><td class="right mono bold" style="color:var(--color-blue);">${fmtUSD(laborUSD)} $</td></tr>` : ''}
     </table>
 
-    <div style="margin-top:30px; display:flex; justify-content:flex-end;">
-      <div style="width:320px; border:1px solid #ddd; padding:12px; border-radius:4px; background:#fff;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
-          <span>Sous-total Matériels :</span>
-          <span style="font-weight:bold;">${fmtUSD(matTotalUSD)} $</span>
+    <!-- ── Summary ── -->
+    <div class="doc-summary">
+      <div class="doc-summary-inner">
+        <div class="doc-summary-row">
+          <span class="doc-summary-label">Sous-total matériels</span>
+          <span class="doc-summary-value">${fmtUSD(matUSD)} $</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;color:#0056b3;margin-bottom:4px;">
-          <span>Sous-total Main-d'œuvre :</span>
-          <span style="font-weight:bold;">${fmtUSD(laborTotalUSD)} $</span>
+        <div class="doc-summary-row">
+          <span class="doc-summary-label">Sous-total main-d'œuvre</span>
+          <span class="doc-summary-value blue">${fmtUSD(laborUSD)} $</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;">
-          <span>TVA (${vat}%) :</span>
-          <span>${fmtUSD(vatValUSD)} $</span>
+        <div class="doc-summary-row">
+          <span class="doc-summary-label">TVA (${vat}%)</span>
+          <span class="doc-summary-value">${fmtUSD(vatAmt)} $</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:17px;border-top:2px solid #111;padding-top:8px;color:#28a745;">
-          <span>TOTAL GÉNÉRAL :</span>
+        <div class="doc-summary-row total">
+          <span>TOTAL GÉNÉRAL</span>
           <span>${fmtUSD(totalUSD)} $</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;color:#666;margin-top:4px;">
-          <span>Équivalent en FC :</span>
+        <div class="doc-summary-row fc-equiv">
+          <span>Équivalent en Francs Congolais</span>
           <span>${fmt(totalFC)} FC</span>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:40px; display:flex; justify-content:space-between;">
-      <div style="font-size:12px; color:#777;">Fait à Ville, le ${date}</div>
-      <div style="text-align:center; width:200px; font-weight:bold;">
-        Signature & Cachet
-        <div style="height:60px;"></div>
+    <!-- ── Footer ── -->
+    <div class="doc-footer">
+      <div class="doc-footer-city">Fait à Ville, le ${date}</div>
+      <div class="doc-sig">
+        <div class="sig-label">Signature &amp; Cachet</div>
+        <div class="sig-line"></div>
+        <div class="sig-name">${companyName}</div>
       </div>
     </div>
-    <div style="margin-top:20px; text-align:center; font-size:11px; color:#999; border-top: 1px solid #eee; padding-top:10px;">
-      Master Plumbing : Excellence en Plomberie et Services.
+
+    <div class="doc-tagline">
+      ${companyName} — Excellence en Plomberie et Services · RDC
     </div>
-    <div style="margin-top:15px;"><button onclick="window.print()" class="btn btn-primary" style="width:100%;">Imprimer / Exporter en PDF</button></div>
+
+    <!-- ── Actions ── -->
+    <div class="preview-actions">
+      <button onclick="window.print()" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="4" width="10" height="7" rx="1" stroke="white" stroke-width="1.4"/><path d="M4 4V2h6v2M4 8h6M4 11h4" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Imprimer / Exporter en PDF
+      </button>
+      <button onclick="document.getElementById('preview').style.display='none'" class="btn btn-secondary">Fermer l'aperçu</button>
+    </div>
   `;
-  window.scrollTo({top: preview.offsetTop, behavior:'smooth'});
+  preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
-document.getElementById('downloadJSON').addEventListener('click', ()=>{
+// ══════════════════════════════════════════════════
+//  SAVE / LOAD
+// ══════════════════════════════════════════════════
+document.getElementById('downloadJSON').addEventListener('click', () => {
   const data = {
-    meta: { mt_name:document.getElementById('mt_name').value, fx_rate:document.getElementById('fx_rate').value },
-    client: { name:document.getElementById('client_name').value, tel:document.getElementById('client_tel').value },
-    items: Array.from(document.querySelectorAll('#items tbody tr')).map(tr=>({d:tr.querySelector('.desc').value, q:tr.querySelector('.qty').value, p:tr.querySelector('.price').value})),
-    labor: Array.from(document.querySelectorAll('#labor_items tbody tr')).map(tr=>({d:tr.querySelector('.desc').value, p:tr.querySelector('.price_usd').value}))
+    type: document.getElementById('type').value,
+    number: document.getElementById('number').value,
+    date: document.getElementById('date').value,
+    fx_rate: document.getElementById('fx_rate').value,
+    vat: document.getElementById('vat').value,
+    company: {
+      name:  document.getElementById('mt_name').value,
+      owner: document.getElementById('mt_owner').value,
+      tel:   document.getElementById('mt_tel').value,
+      addr:  document.getElementById('mt_addr').value,
+    },
+    client: {
+      name: document.getElementById('client_name').value,
+      tel:  document.getElementById('client_tel').value,
+      addr: document.getElementById('client_addr').value,
+    },
+    items: Array.from(document.querySelectorAll('#items tbody tr')).map(tr => ({
+      d: tr.querySelector('.desc').value,
+      q: tr.querySelector('.qty').value,
+      p: tr.querySelector('.price').value,
+    })),
+    labor: Array.from(document.querySelectorAll('#labor_items tbody tr')).map(tr => ({
+      d: tr.querySelector('.desc').value,
+      p: tr.querySelector('.price_usd').value,
+    })),
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)],{type:'application/json'});
-  const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='projet_mp.json'; a.click();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `MP_${data.type}_${data.number || Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
-document.getElementById('resetAll').addEventListener('click', ()=>{
-  document.querySelectorAll('tbody').forEach(b => b.innerHTML='');
-  document.getElementById('preview').style.display='none';
+document.getElementById('loadJSON').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      loadData(data);
+    } catch (err) {
+      alert('Fichier JSON invalide.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+function loadData(data) {
+  // reset tables
+  document.querySelector('#items tbody').innerHTML       = '';
+  document.querySelector('#labor_items tbody').innerHTML = '';
+  document.getElementById('preview').style.display      = 'none';
+
+  if (data.type) {
+    document.getElementById('type').value = data.type;
+    const badge = document.getElementById('type_badge');
+    badge.textContent  = data.type.toUpperCase();
+    badge.className    = 'badge-type ' + data.type;
+  }
+  if (data.number)  document.getElementById('number').value   = data.number;
+  if (data.date)    document.getElementById('date').value     = data.date;
+  if (data.fx_rate) document.getElementById('fx_rate').value  = data.fx_rate;
+  if (data.vat)     document.getElementById('vat').value      = data.vat;
+
+  if (data.company) {
+    if (data.company.name)  document.getElementById('mt_name').value  = data.company.name;
+    if (data.company.owner) document.getElementById('mt_owner').value = data.company.owner;
+    if (data.company.tel)   document.getElementById('mt_tel').value   = data.company.tel;
+    if (data.company.addr)  document.getElementById('mt_addr').value  = data.company.addr;
+  }
+  if (data.meta) {
+    if (data.meta.mt_name)  document.getElementById('mt_name').value  = data.meta.mt_name;
+    if (data.meta.fx_rate)  document.getElementById('fx_rate').value  = data.meta.fx_rate;
+  }
+  if (data.client) {
+    if (data.client.name) document.getElementById('client_name').value = data.client.name;
+    if (data.client.tel)  document.getElementById('client_tel').value  = data.client.tel;
+    if (data.client.addr) document.getElementById('client_addr').value = data.client.addr;
+  }
+  (data.items  || []).forEach(it => addMaterialRow(it.d, it.q, it.p));
+  (data.labor  || []).forEach(it => addLaborRow(it.d, it.p));
+}
+
+// ══════════════════════════════════════════════════
+//  RESET
+// ══════════════════════════════════════════════════
+document.getElementById('resetAll').addEventListener('click', () => {
+  if (!confirm('Effacer tous les données du formulaire ?')) return;
+  document.querySelector('#items tbody').innerHTML       = '';
+  document.querySelector('#labor_items tbody').innerHTML = '';
+  document.getElementById('preview').style.display      = 'none';
   init();
 });
 
-function init(){
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+function init() {
   document.getElementById('date').valueAsDate = new Date();
+  if (!document.getElementById('number').value) {
+    const d = new Date();
+    document.getElementById('number').value = `MP-${d.getFullYear()}-001`;
+  }
   addMaterialRow('Tuyau PVC 1/2"', 2, 4500);
   addLaborRow('Installation complète tuyauterie', 50);
 }
